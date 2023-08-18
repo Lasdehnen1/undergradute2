@@ -2,25 +2,26 @@ package com.example.undergradute2.Service;
 
 import com.example.undergradute2.Entity.Question;
 import com.example.undergradute2.Exception.QuestionNotFoundException;
-import com.example.undergradute2.Repository.JavaQuestionRepository;
-import org.junit.jupiter.api.Assertions;
+import com.example.undergradute2.Repository.MathQuestionRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class JavaQuestionServiceTest {
-    private JavaQuestionRepository javaQuestionRepository = mock(JavaQuestionRepository.class);
+class MathQuestionServiceTest {
+    private MathQuestionRepository mathQuestionRepository = mock(MathQuestionRepository.class);
 
     @InjectMocks
-    JavaQuestionService javaQuestionService;
+    MathQuestionService mathQuestionService;
 
     @Test
     void add() {
@@ -29,12 +30,11 @@ class JavaQuestionServiceTest {
         Question question = new Question("Question1", "Answer1");
         Question expected = question;
 
-        when(javaQuestionService.getAll()).thenReturn(questions);
+        when(mathQuestionService.getAll()).thenReturn(questions);
 
-        Question actual = javaQuestionService.add(question);
+        Question actual = mathQuestionService.add(question);
         assertEquals(expected, actual);
     }
-
 
     @Test
     void remove() {
@@ -45,31 +45,30 @@ class JavaQuestionServiceTest {
 
         Set<Question> expected = Set.of(question);
 
-        when(javaQuestionService.getAll()).thenReturn(questions);
+        when(mathQuestionService.getAll()).thenReturn(questions);
 
         questions.add(question);
         questions.add(question1);
 
         questions.remove(question1);
-        Collection<Question> actual = javaQuestionService.getAll();
+        Collection<Question> actual = mathQuestionService.getAll();
         assertEquals(expected, actual);
     }
 
     @Test
-    void removeNotFound() {
+    void removeNotExisting() {
         String expected = "Такой вопрос не найден";
         Set<Question> questions = new HashSet<>();
-        when(javaQuestionService.getAll()).thenReturn(questions);
-        javaQuestionService.add("Question1", "Answer1");
+        when(mathQuestionService.getAll()).thenReturn(questions);
+        mathQuestionService.add("Question1", "Answer1");
         Exception exception = assertThrows(
                 QuestionNotFoundException.class,
                 () -> {
-                    javaQuestionService.remove(new Question("Question2", "Answer2"));
+                    mathQuestionService.remove(new Question("Question2", "Answer2"));
                 });
 
         assertEquals(expected, exception.getMessage());
     }
-
 
     @Test
     void getAll() {
@@ -81,33 +80,27 @@ class JavaQuestionServiceTest {
         expected.add(question1);
         expected.add(question2);
         Set<Question> questions = new HashSet<>();
-        when(javaQuestionService.getAll()).thenReturn(questions);
+        when(mathQuestionService.getAll()).thenReturn(questions);
 
         questions.add(question1);
         questions.add(question2);
 
-        Collection<Question> actual = javaQuestionService.getAll();
+        Collection<Question> actual = mathQuestionService.getAll();
 
         assertEquals(expected, actual);
     }
 
     @Test
     void getRandomQuestion() {
-
-
         Question expected = new Question("Question1", "Answer1");
 
         Set<Question> questions = new HashSet<>();
-        when(javaQuestionService.getAll()).thenReturn(questions);
+        when(mathQuestionService.getAll()).thenReturn(questions);
 
         questions.add(expected);
 
-        Question actual = javaQuestionService.getRandomQuestion();
+        Question actual = mathQuestionService.getRandomQuestion();
 
         assertEquals(expected, actual);
     }
-
-
-
-
 }

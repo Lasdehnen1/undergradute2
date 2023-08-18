@@ -9,9 +9,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.*;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -20,25 +20,28 @@ class ExaminerServiceImplTest {
 
 
     private final JavaQuestionService questionService = mock(JavaQuestionService.class);
+    private final MathQuestionService mathQuestionService = mock(MathQuestionService.class);
 
     @InjectMocks
     ExaminerServiceImpl examinerService;
 
     @Test
     void getQuestions() {
-        Set<Question> questions = new LinkedHashSet<>();
-        Question q1 = new Question("Question1", "Answer1");
-        Question q2 = new Question("Question2", "Answer2");
-        questions.add(q1);
-        questions.add(q2);
 
-        when(questionService.getAll()).thenReturn(questions);
-        when(questionService.getRandomQuestion()).thenReturn(q2);
-        Collection<Question> expected = Set.of(q2);
-        Collection <Question> actual = examinerService.getQuestions(1);
 
-        assertEquals(expected, actual);
+        Question question = new Question("JavaQuestion1", "Answer1");
+        Question question2 = new Question("MathQuestion2", "Answer2");
+        Set<Question> expected1 = new HashSet<>(Set.of(
+                new Question("JavaQuestion1", "Answer1"),
+                new Question("MathQuestion2", "Answer2")
+        ));
 
+        when(questionService.getRandomQuestion()).thenReturn(question);
+        when(mathQuestionService.getRandomQuestion()).thenReturn(question2);
+        Collection<Question> actual = examinerService.getQuestions(2);
+        assertThat(Objects.equals(expected1, actual)).isTrue();
 
     }
+
+
 }

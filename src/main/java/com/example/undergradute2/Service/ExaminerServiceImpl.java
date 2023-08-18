@@ -1,29 +1,44 @@
 package com.example.undergradute2.Service;
 
 import com.example.undergradute2.Entity.Question;
-import com.example.undergradute2.Exception.QuestionAmountException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class ExaminerServiceImpl implements ExaminerService {
-    private final JavaQuestionService javaQuestionService;
 
-    public ExaminerServiceImpl(JavaQuestionService javaQuestionService) {
+    @Qualifier("javaQuestionService")
+    QuestionService javaQuestionService;
+    @Qualifier("mathQuestionService")
+    QuestionService mathQuestionService;
+
+    @Autowired
+    public void setJavaQuestionService(QuestionService javaQuestionService) {
         this.javaQuestionService = javaQuestionService;
+    }
+
+    @Autowired
+    public void setMathQuestionService(QuestionService mathQuestionService) {
+        this.mathQuestionService = mathQuestionService;
     }
 
     @Override
     public Collection<Question> getQuestions(int amount) {
-        if (amount < 1) {
-            throw new QuestionAmountException("Количество не может быть меньше 1");
-        }
-        if (amount > javaQuestionService.getAll().size()) {
-            throw new QuestionAmountException("Такого количества вопросов не существует");
-        }
+
+        Random r = new Random();
+        Set<Question> result = new HashSet<>();
+        int javaAmount = r.nextInt(amount);
+        int mathAmount = amount - javaAmount;
+
+        result.addAll(getJavaQuestions(javaAmount));
+        result.addAll(getMathQuestions(mathAmount));
+
+        return result;
+    }
+    public Collection<Question> getJavaQuestions(int amount) {
         Set<Question> result = new HashSet<>();
         while (result.size() < amount) {
             result.add(javaQuestionService.getRandomQuestion());
@@ -31,5 +46,12 @@ public class ExaminerServiceImpl implements ExaminerService {
         return result;
     }
 
+    public Collection<Question> getMathQuestions(int amount) {
+        Set<Question> result = new HashSet<>();
+        while (result.size() < amount) {
+            result.add(mathQuestionService.getRandomQuestion());
+        }
+        return result;
+    }
 
 }
