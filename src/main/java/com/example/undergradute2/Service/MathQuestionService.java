@@ -1,57 +1,89 @@
 package com.example.undergradute2.Service;
 
 import com.example.undergradute2.Entity.Question;
-import com.example.undergradute2.Exception.QuestionNotFoundException;
-import com.example.undergradute2.Repository.MathQuestionRepository;
+import com.example.undergradute2.Exception.MethodNotAllowedException;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+
 @Service
 public class MathQuestionService implements QuestionService {
-    private final MathQuestionRepository mathQuestionRepository;
-
-    public MathQuestionService(MathQuestionRepository mathQuestionRepository) {
-        this.mathQuestionRepository = mathQuestionRepository;
-    }
 
     @Override
     public Question add(String question, String answer) {
-        Question newQuestion = new Question(question, answer);
-        mathQuestionRepository.add(newQuestion);
-        return newQuestion;
+        throw new MethodNotAllowedException("Метод не разрешен");
     }
 
     @Override
     public Question add(Question question) {
-        mathQuestionRepository.add(question);
-        return question;
+        throw new MethodNotAllowedException("Метод не разрешен");
     }
 
     @Override
     public Question remove(Question question) {
-        if(!mathQuestionRepository.getAll().contains(question)) {
-            throw new QuestionNotFoundException("Такой вопрос не найден");
-        }
-        for (Question q : mathQuestionRepository.getAll()) {
-            if (q.equals(question)) {
-                mathQuestionRepository.remove(question);
-                return q;
-            }
-        }
-        return question;
+        throw new MethodNotAllowedException("Метод не разрешен");
     }
 
     @Override
     public Collection<Question> getAll() {
-        return mathQuestionRepository.getAll();
+        throw new MethodNotAllowedException("Метод не разрешен");
     }
 
     @Override
     public Question getRandomQuestion() {
-        List<Question> questionArrayList = new ArrayList<>(mathQuestionRepository.getAll());
         Random r = new Random();
-        return questionArrayList.get(r.nextInt(mathQuestionRepository.getAll().size()));
+        String sign = signGenerator();
+        String question = " ";
+        String answer = " ";
+        double result;
+        int num1 = r.nextInt(10);
+        int num2 = r.nextInt( 10);
+        switch (sign) {
+            case "+":
+                question = num1 + " " + sign + " " + num2 + " = ";
+                result = num1 + num2;
+                answer = String.valueOf(result);
+                break;
+            case "-":
+                question = num1 + " " + sign + " " + num2 + " = ";
+                result = num1 - num2;
+                answer = String.valueOf(result);
+                break;
+            case "*":
+                question = num1 + " " + sign + " " + num2 + " = ";
+                result = num1 * num2;
+                answer = String.valueOf(result);
+                break;
+            case "/":
+                question = num1 + " " + sign + " " + num2 + " = ";
+                result = (double) num1 / num2;
+                answer = String.valueOf(result);
+                break;
+            default:
+                throw new RuntimeException("Конец");
+        }
+
+        return new Question(question, answer);
+
     }
 
+
+    private static String signGenerator() {
+        Random r = new Random();
+        int signValue = r.nextInt(4);
+        switch (signValue) {
+            case 0:
+                return "+";
+            case 1:
+                return "-";
+            case 2:
+                return "*";
+            case 3:
+                return "/";
+            default:
+                throw new RuntimeException("Конец");
+
+        }
+    }
 
 }

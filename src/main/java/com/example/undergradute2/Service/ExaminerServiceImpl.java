@@ -10,48 +10,29 @@ import java.util.*;
 @Service
 public class ExaminerServiceImpl implements ExaminerService {
 
-    @Qualifier("javaQuestionService")
-    QuestionService javaQuestionService;
-    @Qualifier("mathQuestionService")
-    QuestionService mathQuestionService;
+    private final List<QuestionService> questionServices = new ArrayList<>();
 
-    @Autowired
-    public void setJavaQuestionService(QuestionService javaQuestionService) {
-        this.javaQuestionService = javaQuestionService;
-    }
-
-    @Autowired
-    public void setMathQuestionService(QuestionService mathQuestionService) {
-        this.mathQuestionService = mathQuestionService;
+    public ExaminerServiceImpl(
+            @Qualifier("javaQuestionService") QuestionService javaQuestionService,
+            @Qualifier("mathQuestionService") QuestionService mathQuestionService
+    ) {
+        questionServices.add(javaQuestionService);
+        questionServices.add(mathQuestionService);
     }
 
     @Override
     public Collection<Question> getQuestions(int amount) {
 
-        Random r = new Random();
-        Set<Question> result = new HashSet<>();
-        int javaAmount = r.nextInt(amount);
-        int mathAmount = amount - javaAmount;
+        Set<Question> questions = new HashSet<>();
 
-        result.addAll(getJavaQuestions(javaAmount));
-        result.addAll(getMathQuestions(mathAmount));
+        Random random = new Random();
 
-        return result;
-    }
-    public Collection<Question> getJavaQuestions(int amount) {
-        Set<Question> result = new HashSet<>();
-        while (result.size() < amount) {
-            result.add(javaQuestionService.getRandomQuestion());
+        while (questions.size() < amount) {
+            int questionServiceIdx = random.nextInt(questionServices.size());
+            questions.add(questionServices.get(questionServiceIdx).getRandomQuestion());
         }
-        return result;
-    }
 
-    public Collection<Question> getMathQuestions(int amount) {
-        Set<Question> result = new HashSet<>();
-        while (result.size() < amount) {
-            result.add(mathQuestionService.getRandomQuestion());
-        }
-        return result;
+        return questions;
     }
 
 }
